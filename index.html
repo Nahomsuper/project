@@ -1,34 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="index.js" defer></script>
 </head>
 <body>
 
-<h2>Student System Control</h2>
+    <main class="app-card">
+        <header>
+            <h1>Expense Tracker</h1>
+            <p>Keep your spending in check</p>
+        </header>
 
-<button onclick="showNames()">Names</button>
-<button onclick="showActive()">Active Students</button>
-<button onclick="showActiveCount()">Active Count</button>
-<button onclick="showInactiveCount()">Inactive Count</button>
-<button onclick="showGender()">Male/Female</button>
-<button onclick="showJS70()">JS > 70</button>
-<button onclick="showJS50()">JS < 50</button>
-<button onclick="showAvgJS()">Average JS</button>
-<button onclick="showHighest()">Highest JS</button>
-<button onclick="showLowest()">Lowest JS</button>
-<button onclick="showPassed()">Passed JS</button>
-<button onclick="showFailed()">Failed JS</button>
-<button onclick="showGrades()">Grades</button>
-<button onclick="searchSara()">Search Sara</button>
+        
+        <section class="form-container">
+            <div class="input-grid">
+                <input type="number" id="amount" placeholder="Amount ($)">
+                <input type="text" id="reason" placeholder="What was this for?">
+                
+                <select id="type">
+                    <option value="">Payment Method</option>
+                    <option>Cash</option>
+                    <option>Bank</option>
+                    <option>Online</option>
+                </select>
 
-<hr>
+                <select id="category">
+                    <option value="">Category</option>
+                    <option>Food</option>
+                    <option>Transport</option>
+                    <option>Education</option>
+                    <option>Rent</option>
+                    <option>Bills</option>
+                    <option>Entertainment</option>
+                </select>
 
-<pre id="output"></pre>
+                <input type="date" id="date">
+            </div>
+            <button onclick="addExpense()" class="btn-submit">Add Expense</button>
+        </section>
 
-<script src="students.js"></script>
-<script src="index.js"></script>
-
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Method</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTable">
+                </tbody>
+            </table>
+        </section>
+    </main>
+<footer>Nahom</footer>
 </body>
 </html>
