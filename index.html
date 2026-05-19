@@ -10,7 +10,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
         <header class="app-header">
             <div class="header-content">
                 <div class="logo-section">
@@ -34,7 +33,6 @@
         </header>
 
         <main class="main-content">
-            <!-- INPUT SECTION -->
             <section class="form-section">
                 <h2><i class="fas fa-plus-circle"></i> Add New Expense</h2>
                 <div class="form-container">
@@ -51,27 +49,27 @@
                             <label for="type">Payment Method</label>
                             <select id="type">
                                 <option value="">Select Method</option>
-                                <option>Cash</option>
-                                <option>Bank</option>
-                                <option>Online</option>
-                                <option>Credit Card</option>
-                                <option>Mobile Payment</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Bank">Bank</option>
+                                <option value="Online">Online</option>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="Mobile Payment">Mobile Payment</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="category">Category</label>
                             <select id="category">
                                 <option value="">Select Category</option>
-                                <option>Food & Dining</option>
-                                <option>Transport</option>
-                                <option>Education</option>
-                                <option>Rent</option>
-                                <option>Bills & Utilities</option>
-                                <option>Entertainment</option>
-                                <option>Shopping</option>
-                                <option>Healthcare</option>
-                                <option>Travel</option>
-                                <option>Other</option>
+                                <option value="Food & Dining">Food & Dining</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Education">Education</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Bills & Utilities">Bills & Utilities</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -85,7 +83,6 @@
                 </div>
             </section>
 
-            <!-- STATISTICS SECTION -->
             <section class="stats-section">
                 <h2><i class="fas fa-chart-bar"></i> Statistics</h2>
                 <div class="stats-grid">
@@ -124,41 +121,35 @@
                 </div>
             </section>
 
-            <!-- FILTER & SEARCH SECTION -->
             <section class="filter-section">
                 <h2><i class="fas fa-filter"></i> Filters & Search</h2>
                 <div class="filter-container">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            placeholder="Search by description..."
-                            class="search-input"
-                        >
+                        <input type="text" id="searchInput" placeholder="Search by description..." class="search-input">
                     </div>
                     
                     <select id="categoryFilter" class="filter-select">
                         <option value="">All Categories</option>
-                        <option>Food & Dining</option>
-                        <option>Transport</option>
-                        <option>Education</option>
-                        <option>Rent</option>
-                        <option>Bills & Utilities</option>
-                        <option>Entertainment</option>
-                        <option>Shopping</option>
-                        <option>Healthcare</option>
-                        <option>Travel</option>
-                        <option>Other</option>
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Education">Education</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Bills & Utilities">Bills & Utilities</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Other">Other</option>
                     </select>
 
                     <select id="typeFilter" class="filter-select">
                         <option value="">All Methods</option>
-                        <option>Cash</option>
-                        <option>Bank</option>
-                        <option>Online</option>
-                        <option>Credit Card</option>
-                        <option>Mobile Payment</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank</option>
+                        <option value="Online">Online</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Mobile Payment">Mobile Payment</option>
                     </select>
 
                     <select id="sortBy" class="filter-select">
@@ -177,7 +168,6 @@
                 </div>
             </section>
 
-            <!-- TABLE SECTION -->
             <section class="table-section">
                 <div class="table-header">
                     <h2><i class="fas fa-list"></i> Expense List</h2>
@@ -222,13 +212,11 @@
             </section>
         </main>
 
-        <!-- FOOTER -->
         <footer class="app-footer">
-            <p>&copy; 2024 Expense Tracker | Made with <i class="fas fa-heart"></i> by Nahom</p>
+            <p>&copy; 2026 Expense Tracker | Made with <i class="fas fa-heart"></i> by Nahom</p>
         </footer>
     </div>
 
-    <!-- MODALS -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3>Confirm Delete</h3>
@@ -239,6 +227,5 @@
             </div>
         </div>
     </div>
-
 </body>
 </html>
