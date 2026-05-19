@@ -1,11 +1,10 @@
-// ============ STATE MANAGEMENT ============
+
 let expenses = [];
 let filteredExpenses = [];
 let count = 1;
 const STORAGE_KEY = 'expenseTrackerData';
 const STORAGE_COUNT_KEY = 'expenseTrackerCount';
 
-// ============ INITIALIZATION ============
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM Loaded - Initializing Expense Tracker");
     loadExpenses();
@@ -16,11 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Initialization complete. Expenses loaded:", expenses.length);
 });
 
-// ============ EVENT LISTENERS ============
 function setupEventListeners() {
     console.log("Setting up event listeners...");
     
-    // Add Expense Button - PRIMARY
     const addBtn = document.getElementById("addBtn");
     if (addBtn) {
         addBtn.addEventListener("click", function(e) {
@@ -32,37 +29,31 @@ function setupEventListeners() {
         console.error("Add button not found!");
     }
     
-    // Export Button
     const exportBtn = document.getElementById("exportBtn");
     if (exportBtn) {
         exportBtn.addEventListener("click", exportToCSV);
     }
     
-    // Clear All Button
     const clearBtn = document.getElementById("clearAllBtn");
     if (clearBtn) {
         clearBtn.addEventListener("click", promptClearAll);
     }
     
-    // Search Filter
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         searchInput.addEventListener("input", applyFilters);
     }
     
-    // Category Filter
     const catFilter = document.getElementById("categoryFilter");
     if (catFilter) {
         catFilter.addEventListener("change", applyFilters);
     }
     
-    // Type Filter
     const typeFilter = document.getElementById("typeFilter");
     if (typeFilter) {
         typeFilter.addEventListener("change", applyFilters);
     }
     
-    // Date Filters
     const startDate = document.getElementById("startDate");
     if (startDate) {
         startDate.addEventListener("change", applyFilters);
@@ -73,19 +64,16 @@ function setupEventListeners() {
         endDate.addEventListener("change", applyFilters);
     }
     
-    // Sorting
     const sortBy = document.getElementById("sortBy");
     if (sortBy) {
         sortBy.addEventListener("change", applySorting);
     }
     
-    // Modal
     const confirmNo = document.getElementById("confirmNo");
     if (confirmNo) {
         confirmNo.addEventListener("click", closeModal);
     }
     
-    // Enter key on amount field
     const amountInput = document.getElementById("amount");
     if (amountInput) {
         amountInput.addEventListener("keypress", (e) => {
@@ -99,7 +87,6 @@ function setupEventListeners() {
     console.log("Event listeners setup complete");
 }
 
-// ============ SET TODAY'S DATE ============
 function setTodayDate() {
     const dateInput = document.getElementById("date");
     if (dateInput) {
@@ -108,7 +95,6 @@ function setTodayDate() {
     }
 }
 
-// ============ ADD EXPENSE ============
 function addExpense() {
     console.log("addExpense function called");
     
@@ -133,7 +119,6 @@ function addExpense() {
 
         console.log("Form values:", { amount, reason, type, category, date });
 
-        // Validation
         if (!amountInput.value || amount <= 0 || isNaN(amount)) {
             showAlert("❌ Please enter a valid amount (greater than 0)", "error");
             amountInput.focus();
@@ -160,7 +145,6 @@ function addExpense() {
             return;
         }
 
-        // Create expense object
         const expense = {
             id: Date.now(),
             count: count,
@@ -174,7 +158,6 @@ function addExpense() {
 
         console.log("Adding expense:", expense);
 
-        // Add to array and save
         expenses.push(expense);
         filteredExpenses = [...expenses]; // Keep filtered list in sync
         count++;
@@ -182,7 +165,6 @@ function addExpense() {
         
         console.log("Total expenses now:", expenses.length);
         
-        // Clear inputs and update UI
         clearInputs();
         renderTable();
         updateStatistics();
@@ -194,7 +176,6 @@ function addExpense() {
     }
 }
 
-// ============ CLEAR INPUTS ============
 function clearInputs() {
     document.getElementById("amount").value = "";
     document.getElementById("reason").value = "";
@@ -203,7 +184,6 @@ function clearInputs() {
     setTodayDate();
 }
 
-// ============ DELETE EXPENSE ============
 function deleteExpense(id) {
     const expense = expenses.find(e => e.id === id);
     if (expense) {
@@ -220,13 +200,11 @@ function deleteExpense(id) {
     }
 }
 
-// ============ SAVE TO LOCALSTORAGE ============
 function saveExpenses() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
     localStorage.setItem(STORAGE_COUNT_KEY, count);
 }
 
-// ============ LOAD FROM LOCALSTORAGE ============
 function loadExpenses() {
     const stored = localStorage.getItem(STORAGE_KEY);
     const storedCount = localStorage.getItem(STORAGE_COUNT_KEY);
@@ -241,7 +219,6 @@ function loadExpenses() {
     }
 }
 
-// ============ FILTERING ============
 function applyFilters() {
     console.log("Applying filters...");
     
@@ -258,19 +235,15 @@ function applyFilters() {
     const endDate = endDateEl ? endDateEl.value : "";
 
     filteredExpenses = expenses.filter(expense => {
-        // Search filter
         const matchesSearch = 
             expense.reason.toLowerCase().includes(searchTerm) ||
             expense.category.toLowerCase().includes(searchTerm) ||
             expense.amount.toString().includes(searchTerm);
 
-        // Category filter
         const matchesCategory = !categoryFilterVal || expense.category === categoryFilterVal;
 
-        // Type filter
         const matchesType = !typeFilterVal || expense.type === typeFilterVal;
 
-        // Date range filter
         let matchesDateRange = true;
         if (startDate || endDate) {
             const expenseDate = new Date(expense.date);
@@ -289,7 +262,6 @@ function applyFilters() {
     renderTable();
 }
 
-// ============ SORTING ============
 function applySorting() {
     const sortBy = document.getElementById("sortBy")?.value || "newest";
 
@@ -314,7 +286,6 @@ function applySorting() {
     renderTable();
 }
 
-// ============ RENDER TABLE ============
 function renderTable() {
     console.log("Rendering table with", filteredExpenses.length, "expenses");
     
@@ -369,7 +340,6 @@ function renderTable() {
     updateTableFooter();
 }
 
-// ============ UPDATE TABLE FOOTER ============
 function updateTableFooter() {
     const totalAmount = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     document.getElementById("expenseCount").textContent = 
@@ -385,9 +355,7 @@ function getExpenseClass(amount) {
     return "expense-low";
 }
 
-// ============ UPDATE STATISTICS ============
 function updateStatistics() {
-    // Overall statistics
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
     const thisMonth = expenses.filter(e => {
         const expenseDate = new Date(e.date);
@@ -399,7 +367,6 @@ function updateStatistics() {
     document.getElementById("totalSpent").textContent = `$${totalSpent.toFixed(2)}`;
     document.getElementById("monthlySpent").textContent = `$${thisMonth.toFixed(2)}`;
 
-    // Categorized statistics
     const lowExpenses = expenses.filter(e => e.amount <= 500);
     const mediumExpenses = expenses.filter(e => e.amount > 500 && e.amount <= 5000);
     const highExpenses = expenses.filter(e => e.amount > 5000);
@@ -416,11 +383,9 @@ function updateStatistics() {
     document.getElementById("mediumCount").textContent = `${mediumExpenses.length} item${mediumExpenses.length !== 1 ? 's' : ''}`;
     document.getElementById("highCount").textContent = `${highExpenses.length} item${highExpenses.length !== 1 ? 's' : ''}`;
 
-    // Top category
     updateTopCategory();
 }
 
-// ============ UPDATE TOP CATEGORY ============
 function updateTopCategory() {
     if (expenses.length === 0) {
         document.getElementById("topCategory").textContent = "N/A";
@@ -466,7 +431,6 @@ function exportToCSV() {
     showAlert("Expenses exported successfully!", "success");
 }
 
-// ============ CLEAR ALL EXPENSES ============
 function promptClearAll() {
     if (expenses.length === 0) {
         showAlert("No expenses to clear", "warning");
@@ -487,7 +451,6 @@ function promptClearAll() {
     );
 }
 
-// ============ MODALS & ALERTS ============
 function showConfirmModal(message, onConfirm) {
     const modal = document.getElementById("confirmModal");
     document.getElementById("confirmMessage").textContent = message;
@@ -546,7 +509,6 @@ function showAlert(message, type = "info") {
         
         document.body.appendChild(alertDiv);
         
-        // Auto remove after 3 seconds
         setTimeout(() => {
             alertDiv.style.animation = "slideOutRight 0.3s ease-in-out";
             setTimeout(() => {
@@ -581,7 +543,6 @@ function getAlertIcon(type) {
     return icons[type] || icons.info;
 }
 
-// ============ UTILITY FUNCTIONS ============
 function formatDate(dateString) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
@@ -593,7 +554,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ============ ADD ANIMATION STYLES ============
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideInRight {
