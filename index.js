@@ -1,37 +1,105 @@
+// ============ STATE MANAGEMENT ============
 let expenses = [];
 let filteredExpenses = [];
 let count = 1;
 const STORAGE_KEY = 'expenseTrackerData';
 const STORAGE_COUNT_KEY = 'expenseTrackerCount';
 
+// ============ INITIALIZATION ============
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM Loaded - Initializing Expense Tracker");
     loadExpenses();
     setTodayDate();
     setupEventListeners();
     renderTable();
     updateStatistics();
+    console.log("Initialization complete. Expenses loaded:", expenses.length);
 });
 
+// ============ EVENT LISTENERS ============
 function setupEventListeners() {
-    document.getElementById("addBtn")?.addEventListener("click", addExpense);
-    document.getElementById("exportBtn")?.addEventListener("click", exportToCSV);
-    document.getElementById("clearAllBtn")?.addEventListener("click", promptClearAll);
+    console.log("Setting up event listeners...");
     
-    document.getElementById("searchInput")?.addEventListener("input", applyFilters);
-    document.getElementById("categoryFilter")?.addEventListener("change", applyFilters);
-    document.getElementById("typeFilter")?.addEventListener("change", applyFilters);
-    document.getElementById("startDate")?.addEventListener("change", applyFilters);
-    document.getElementById("endDate")?.addEventListener("change", applyFilters);
+    // Add Expense Button - PRIMARY
+    const addBtn = document.getElementById("addBtn");
+    if (addBtn) {
+        addBtn.addEventListener("click", function(e) {
+            console.log("Add Expense button clicked");
+            e.preventDefault();
+            addExpense();
+        });
+    } else {
+        console.error("Add button not found!");
+    }
     
-    document.getElementById("sortBy")?.addEventListener("change", applySorting);
+    // Export Button
+    const exportBtn = document.getElementById("exportBtn");
+    if (exportBtn) {
+        exportBtn.addEventListener("click", exportToCSV);
+    }
     
-    document.getElementById("confirmNo")?.addEventListener("click", closeModal);
+    // Clear All Button
+    const clearBtn = document.getElementById("clearAllBtn");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", promptClearAll);
+    }
     
-    document.getElementById("amount")?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") addExpense();
-    });
+    // Search Filter
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("input", applyFilters);
+    }
+    
+    // Category Filter
+    const catFilter = document.getElementById("categoryFilter");
+    if (catFilter) {
+        catFilter.addEventListener("change", applyFilters);
+    }
+    
+    // Type Filter
+    const typeFilter = document.getElementById("typeFilter");
+    if (typeFilter) {
+        typeFilter.addEventListener("change", applyFilters);
+    }
+    
+    // Date Filters
+    const startDate = document.getElementById("startDate");
+    if (startDate) {
+        startDate.addEventListener("change", applyFilters);
+    }
+    
+    const endDate = document.getElementById("endDate");
+    if (endDate) {
+        endDate.addEventListener("change", applyFilters);
+    }
+    
+    // Sorting
+    const sortBy = document.getElementById("sortBy");
+    if (sortBy) {
+        sortBy.addEventListener("change", applySorting);
+    }
+    
+    // Modal
+    const confirmNo = document.getElementById("confirmNo");
+    if (confirmNo) {
+        confirmNo.addEventListener("click", closeModal);
+    }
+    
+    // Enter key on amount field
+    const amountInput = document.getElementById("amount");
+    if (amountInput) {
+        amountInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                addExpense();
+            }
+        });
+    }
+    
+    console.log("Event listeners setup complete");
 }
 
+// ============ SET TODAY'S DATE ============
 function setTodayDate() {
     const dateInput = document.getElementById("date");
     if (dateInput) {
@@ -40,61 +108,93 @@ function setTodayDate() {
     }
 }
 
+// ============ ADD EXPENSE ============
 function addExpense() {
-    const amountInput = document.getElementById("amount");
-    const reasonInput = document.getElementById("reason");
-    const typeInput = document.getElementById("type");
-    const categoryInput = document.getElementById("category");
-    const dateInput = document.getElementById("date");
-
-    const amount = Number(amountInput.value);
-    const reason = reasonInput.value.trim();
-    const type = typeInput.value;
-    const category = categoryInput.value;
-    const date = dateInput.value;
-
-    if (amount <= 0) {
-        showAlert("Please enter a valid amount", "error");
-        return;
-    }
-    if (reason === "") {
-        showAlert("Please enter a description", "error");
-        return;
-    }
-    if (type === "") {
-        showAlert("Please select a payment method", "error");
-        return;
-    }
-    if (category === "") {
-        showAlert("Please select a category", "error");
-        return;
-    }
-    if (date === "") {
-        showAlert("Please select a date", "error");
-        return;
-    }
-
-    const expense = {
-        id: Date.now(),
-        count: count,
-        amount: amount,
-        reason: reason,
-        type: type,
-        category: category,
-        date: date,
-        timestamp: new Date().toISOString()
-    };
-
-    expenses.push(expense);
-    count++;
-    saveExpenses();
+    console.log("addExpense function called");
     
-    clearInputs();
-    renderTable();
-    updateStatistics();
-    showAlert("Expense added successfully!", "success");
+    try {
+        const amountInput = document.getElementById("amount");
+        const reasonInput = document.getElementById("reason");
+        const typeInput = document.getElementById("type");
+        const categoryInput = document.getElementById("category");
+        const dateInput = document.getElementById("date");
+
+        if (!amountInput || !reasonInput || !typeInput || !categoryInput || !dateInput) {
+            console.error("One or more input fields not found");
+            showAlert("Form elements not found. Please refresh the page.", "error");
+            return;
+        }
+
+        const amount = Number(amountInput.value);
+        const reason = reasonInput.value.trim();
+        const type = typeInput.value.trim();
+        const category = categoryInput.value.trim();
+        const date = dateInput.value.trim();
+
+        console.log("Form values:", { amount, reason, type, category, date });
+
+        // Validation
+        if (!amountInput.value || amount <= 0 || isNaN(amount)) {
+            showAlert("❌ Please enter a valid amount (greater than 0)", "error");
+            amountInput.focus();
+            return;
+        }
+        if (reason === "") {
+            showAlert("❌ Please enter a description", "error");
+            reasonInput.focus();
+            return;
+        }
+        if (type === "") {
+            showAlert("❌ Please select a payment method", "error");
+            typeInput.focus();
+            return;
+        }
+        if (category === "") {
+            showAlert("❌ Please select a category", "error");
+            categoryInput.focus();
+            return;
+        }
+        if (date === "") {
+            showAlert("❌ Please select a date", "error");
+            dateInput.focus();
+            return;
+        }
+
+        // Create expense object
+        const expense = {
+            id: Date.now(),
+            count: count,
+            amount: amount,
+            reason: reason,
+            type: type,
+            category: category,
+            date: date,
+            timestamp: new Date().toISOString()
+        };
+
+        console.log("Adding expense:", expense);
+
+        // Add to array and save
+        expenses.push(expense);
+        filteredExpenses = [...expenses]; // Keep filtered list in sync
+        count++;
+        saveExpenses();
+        
+        console.log("Total expenses now:", expenses.length);
+        
+        // Clear inputs and update UI
+        clearInputs();
+        renderTable();
+        updateStatistics();
+        showAlert("✅ Expense added successfully!", "success");
+        
+    } catch (error) {
+        console.error("Error in addExpense:", error);
+        showAlert("❌ An error occurred: " + error.message, "error");
+    }
 }
 
+// ============ CLEAR INPUTS ============
 function clearInputs() {
     document.getElementById("amount").value = "";
     document.getElementById("reason").value = "";
@@ -103,6 +203,7 @@ function clearInputs() {
     setTodayDate();
 }
 
+// ============ DELETE EXPENSE ============
 function deleteExpense(id) {
     const expense = expenses.find(e => e.id === id);
     if (expense) {
@@ -119,12 +220,13 @@ function deleteExpense(id) {
     }
 }
 
+// ============ SAVE TO LOCALSTORAGE ============
 function saveExpenses() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
     localStorage.setItem(STORAGE_COUNT_KEY, count);
 }
 
-// 
+// ============ LOAD FROM LOCALSTORAGE ============
 function loadExpenses() {
     const stored = localStorage.getItem(STORAGE_KEY);
     const storedCount = localStorage.getItem(STORAGE_COUNT_KEY);
@@ -139,23 +241,36 @@ function loadExpenses() {
     }
 }
 
+// ============ FILTERING ============
 function applyFilters() {
-    const searchTerm = document.getElementById("searchInput")?.value.toLowerCase() || "";
-    const categoryFilter = document.getElementById("categoryFilter")?.value || "";
-    const typeFilter = document.getElementById("typeFilter")?.value || "";
-    const startDate = document.getElementById("startDate")?.value || "";
-    const endDate = document.getElementById("endDate")?.value || "";
+    console.log("Applying filters...");
+    
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const startDateEl = document.getElementById("startDate");
+    const endDateEl = document.getElementById("endDate");
+    
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+    const categoryFilterVal = categoryFilter ? categoryFilter.value : "";
+    const typeFilterVal = typeFilter ? typeFilter.value : "";
+    const startDate = startDateEl ? startDateEl.value : "";
+    const endDate = endDateEl ? endDateEl.value : "";
 
     filteredExpenses = expenses.filter(expense => {
+        // Search filter
         const matchesSearch = 
             expense.reason.toLowerCase().includes(searchTerm) ||
             expense.category.toLowerCase().includes(searchTerm) ||
             expense.amount.toString().includes(searchTerm);
 
-        const matchesCategory = !categoryFilter || expense.category === categoryFilter;
+        // Category filter
+        const matchesCategory = !categoryFilterVal || expense.category === categoryFilterVal;
 
-        const matchesType = !typeFilter || expense.type === typeFilter;
+        // Type filter
+        const matchesType = !typeFilterVal || expense.type === typeFilterVal;
 
+        // Date range filter
         let matchesDateRange = true;
         if (startDate || endDate) {
             const expenseDate = new Date(expense.date);
@@ -170,10 +285,11 @@ function applyFilters() {
         return matchesSearch && matchesCategory && matchesType && matchesDateRange;
     });
 
+    console.log("Filtered expenses:", filteredExpenses.length);
     renderTable();
-    updateStatistics();
 }
 
+// ============ SORTING ============
 function applySorting() {
     const sortBy = document.getElementById("sortBy")?.value || "newest";
 
@@ -198,16 +314,24 @@ function applySorting() {
     renderTable();
 }
 
+// ============ RENDER TABLE ============
 function renderTable() {
+    console.log("Rendering table with", filteredExpenses.length, "expenses");
+    
     const tableBody = document.getElementById("expenseTable");
+    if (!tableBody) {
+        console.error("Table body element not found!");
+        return;
+    }
+    
     tableBody.innerHTML = "";
 
-    if (filteredExpenses.length === 0) {
+    if (!filteredExpenses || filteredExpenses.length === 0) {
         tableBody.innerHTML = `
             <tr class="empty-state">
                 <td colspan="7">
                     <i class="fas fa-inbox"></i>
-                    <p>No expenses found. Try adjusting your filters!</p>
+                    <p>${expenses.length === 0 ? "No expenses yet. Add one to get started!" : "No expenses found. Try adjusting your filters!"}</p>
                 </td>
             </tr>
         `;
@@ -215,29 +339,37 @@ function renderTable() {
         return;
     }
 
-    filteredExpenses.forEach(expense => {
-        const row = tableBody.insertRow();
-        const expenseClass = getExpenseClass(expense.amount);
-        row.classList.add(expenseClass);
+    filteredExpenses.forEach((expense, index) => {
+        try {
+            const row = tableBody.insertRow();
+            const expenseClass = getExpenseClass(expense.amount);
+            row.classList.add(expenseClass);
 
-        row.innerHTML = `
-            <td>${expense.count}</td>
-            <td class="amount-cell">$${expense.amount.toFixed(2)}</td>
-            <td>${escapeHtml(expense.reason)}</td>
-            <td><span class="badge-type">${escapeHtml(expense.type)}</span></td>
-            <td>${escapeHtml(expense.category)}</td>
-            <td class="date-cell">${formatDate(expense.date)}</td>
-            <td class="action-cell">
-                <button class="btn btn-delete" onclick="deleteExpense(${expense.id})" title="Delete">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        `;
+            const amountStr = parseFloat(expense.amount).toFixed(2);
+            const dateStr = formatDate(expense.date);
+            
+            row.innerHTML = `
+                <td>${expense.count}</td>
+                <td class="amount-cell">$${amountStr}</td>
+                <td>${escapeHtml(expense.reason)}</td>
+                <td><span class="badge-type">${escapeHtml(expense.type)}</span></td>
+                <td>${escapeHtml(expense.category)}</td>
+                <td class="date-cell">${dateStr}</td>
+                <td class="action-cell">
+                    <button class="btn btn-delete" onclick="deleteExpense(${expense.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+        } catch (error) {
+            console.error("Error rendering row:", error, expense);
+        }
     });
 
     updateTableFooter();
 }
 
+// ============ UPDATE TABLE FOOTER ============
 function updateTableFooter() {
     const totalAmount = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     document.getElementById("expenseCount").textContent = 
@@ -246,13 +378,16 @@ function updateTableFooter() {
         `Total: $${totalAmount.toFixed(2)}`;
 }
 
+// ============ GET EXPENSE CLASS ============
 function getExpenseClass(amount) {
     if (amount > 5000) return "expense-high";
     if (amount > 500) return "expense-medium";
     return "expense-low";
 }
 
+// ============ UPDATE STATISTICS ============
 function updateStatistics() {
+    // Overall statistics
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
     const thisMonth = expenses.filter(e => {
         const expenseDate = new Date(e.date);
@@ -264,6 +399,7 @@ function updateStatistics() {
     document.getElementById("totalSpent").textContent = `$${totalSpent.toFixed(2)}`;
     document.getElementById("monthlySpent").textContent = `$${thisMonth.toFixed(2)}`;
 
+    // Categorized statistics
     const lowExpenses = expenses.filter(e => e.amount <= 500);
     const mediumExpenses = expenses.filter(e => e.amount > 500 && e.amount <= 5000);
     const highExpenses = expenses.filter(e => e.amount > 5000);
@@ -280,9 +416,11 @@ function updateStatistics() {
     document.getElementById("mediumCount").textContent = `${mediumExpenses.length} item${mediumExpenses.length !== 1 ? 's' : ''}`;
     document.getElementById("highCount").textContent = `${highExpenses.length} item${highExpenses.length !== 1 ? 's' : ''}`;
 
+    // Top category
     updateTopCategory();
 }
 
+// ============ UPDATE TOP CATEGORY ============
 function updateTopCategory() {
     if (expenses.length === 0) {
         document.getElementById("topCategory").textContent = "N/A";
@@ -303,6 +441,7 @@ function updateTopCategory() {
     document.getElementById("topCategoryAmount").textContent = `$${categoryTotals[topCat].toFixed(2)}`;
 }
 
+// ============ EXPORT TO CSV ============
 function exportToCSV() {
     if (expenses.length === 0) {
         showAlert("No expenses to export", "warning");
@@ -327,6 +466,7 @@ function exportToCSV() {
     showAlert("Expenses exported successfully!", "success");
 }
 
+// ============ CLEAR ALL EXPENSES ============
 function promptClearAll() {
     if (expenses.length === 0) {
         showAlert("No expenses to clear", "warning");
@@ -347,6 +487,7 @@ function promptClearAll() {
     );
 }
 
+// ============ MODALS & ALERTS ============
 function showConfirmModal(message, onConfirm) {
     const modal = document.getElementById("confirmModal");
     document.getElementById("confirmMessage").textContent = message;
@@ -354,6 +495,7 @@ function showConfirmModal(message, onConfirm) {
     const confirmBtn = document.getElementById("confirmYes");
     const cancelBtn = document.getElementById("confirmNo");
     
+    // Remove old listeners
     confirmBtn.replaceWith(confirmBtn.cloneNode(true));
     cancelBtn.replaceWith(cancelBtn.cloneNode(true));
     
@@ -372,35 +514,51 @@ function closeModal() {
 }
 
 function showAlert(message, type = "info") {
-    const alertDiv = document.createElement("div");
-    alertDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 16px 20px;
-        background: ${getAlertColor(type)};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        font-weight: 600;
-        z-index: 2000;
-        animation: slideInRight 0.3s ease-in-out;
-        max-width: 400px;
-    `;
+    console.log("Alert:", type, message);
     
-    alertDiv.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <i class="fas fa-${getAlertIcon(type)}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
-    setTimeout(() => {
-        alertDiv.style.animation = "slideOutRight 0.3s ease-in-out";
-        setTimeout(() => alertDiv.remove(), 300);
-    }, 3000);
+    try {
+        // Create alert element
+        const alertDiv = document.createElement("div");
+        const bgColor = getAlertColor(type);
+        const icon = getAlertIcon(type);
+        
+        alertDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            background: ${bgColor};
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+            z-index: 2000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease-in-out;
+        `;
+        
+        alertDiv.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-${icon}" style="font-size: 1.2rem;"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            alertDiv.style.animation = "slideOutRight 0.3s ease-in-out";
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 300);
+        }, 3000);
+    } catch (error) {
+        console.error("Error showing alert:", error);
+        alert(message); // Fallback to browser alert
+    }
 }
 
 function getAlertColor(type) {
@@ -423,6 +581,7 @@ function getAlertIcon(type) {
     return icons[type] || icons.info;
 }
 
+// ============ UTILITY FUNCTIONS ============
 function formatDate(dateString) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
@@ -434,6 +593,7 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ============ ADD ANIMATION STYLES ============
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideInRight {
